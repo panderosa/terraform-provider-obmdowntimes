@@ -42,7 +42,11 @@ func resourceDowntime() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"start_date": {
+			"schedule": {
+				Type: schema.TypeMap,
+				Elem: &schema.Schema{},
+			},
+			/*"start_date": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -59,7 +63,7 @@ func resourceDowntime() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "Europe/Berlin",
-			},
+			},*/
 			"last_updated": {
 				Type:     schema.TypeString,
 				Optional: true,
