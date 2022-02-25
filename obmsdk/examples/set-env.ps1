@@ -4,6 +4,7 @@ $obmenv = @{
     OBM_BA_USER = "obm_api_user";
     OBM_BA_PASSWORD = "Qwer1234";
     OBM_LOG_FILE = "C:\\Users\\sa_malinod\\log.txt"; # if set store HTTP request/response payload to the file
+    TF_CLI_CONFIG_FILE = "C:\\Users\\sa_malinod\\AppData\\terraform.tfrc"
 }
 
 foreach ($key in $obmenv.Keys) {

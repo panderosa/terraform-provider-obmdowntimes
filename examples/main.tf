@@ -19,7 +19,7 @@ provider "downtimes" {
 resource "downtime" "downtime_01" {
   provider     = downtimes.dev
   name         = "OBM Dowtime"
-  description  = "Created from terraform. change 1."
+  description  = "Created from terraform. change 2."
   action       = "STOP_MONITORING"
   approver     = "Dariusz Malinowski"
   category     = "OS_CONFIGURATION"
