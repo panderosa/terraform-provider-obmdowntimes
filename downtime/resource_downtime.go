@@ -43,9 +43,56 @@ func resourceDowntime() *schema.Resource {
 				Required: true,
 			},
 			"schedule": {
-				Type: schema.TypeMap,
-				Elem: &schema.Schema{},
+				Type:     schema.TypeSet,
+				MaxItems: 1,
+				Required: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Type:         schema.TypeString,
+							Optional:     true,
+							InputDefault: "ONCE",
+						},
+						"start_date": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"end_date": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"timezone": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
 			},
+			/*"schedule": {
+				Type:     schema.TypeMap,
+				Required: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "ONCE",
+						},
+						"start_date": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"end_date": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"timezone": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},*/
 			/*"start_date": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -134,10 +181,13 @@ func resourceDowntimeCreate(ctx context.Context, d *schema.ResourceData, meta in
 		Category:    mapCategory(d.Get("category").(string)),
 		SelectedCIs: mapCIs(d.Get("selected_cis").(string)),
 	}
-	options.Schedule.Type = d.Get("schedule").(string)
-	options.Schedule.TimeZone = d.Get("timezone").(string)
-	options.Schedule.StartDate = d.Get("start_date").(string)
-	options.Schedule.EndDate = d.Get("end_date").(string)
+	schedule := d.Get("schedule").(*schema.Set)
+	schedule_list := schedule.List()
+	schedule_map := schedule_list[0].(map[string]interface{})
+	options.Schedule.Type = schedule_map["type"].(string)
+	options.Schedule.TimeZone = schedule_map["timezone"].(string)
+	options.Schedule.StartDate = schedule_map["start_date"].(string)
+	options.Schedule.EndDate = schedule_map["end_date"].(string)
 	options.Action.Type = d.Get("action").(string)
 
 	downtime, err := conn.Downtimes.Create(options)
@@ -150,7 +200,7 @@ func resourceDowntimeCreate(ctx context.Context, d *schema.ResourceData, meta in
 
 func anyUpdate(d *schema.ResourceData) bool {
 	status := false
-	keys := []string{"name", "description", "approver", "category", "schedule", "timezone", "start_date", "end_date", "action", "selected_cis"}
+	keys := []string{"name", "description", "approver", "category", "schedule", "action", "selected_cis"}
 	for i := range keys {
 		status = status || d.HasChange(keys[i])
 	}
@@ -169,10 +219,13 @@ func resourceDowntimeUpdate(ctx context.Context, d *schema.ResourceData, meta in
 			Category:    mapCategory(d.Get("category").(string)),
 			SelectedCIs: mapCIs(d.Get("selected_cis").(string)),
 		}
-		options.Schedule.Type = d.Get("schedule").(string)
-		options.Schedule.TimeZone = d.Get("timezone").(string)
-		options.Schedule.StartDate = d.Get("start_date").(string)
-		options.Schedule.EndDate = d.Get("end_date").(string)
+		schedule := d.Get("schedule").(*schema.Set)
+		schedule_list := schedule.List()
+		schedule_map := schedule_list[0].(map[string]interface{})
+		options.Schedule.Type = schedule_map["type"].(string)
+		options.Schedule.TimeZone = schedule_map["timezone"].(string)
+		options.Schedule.StartDate = schedule_map["start_date"].(string)
+		options.Schedule.EndDate = schedule_map["end_date"].(string)
 		options.Action.Type = d.Get("action").(string)
 
 		err := conn.Downtimes.Update(downtimeID, options)
@@ -202,11 +255,28 @@ func resourceDowntimeRead(ctx context.Context, d *schema.ResourceData, meta inte
 	d.Set("approver", dnt.Approver)
 	d.Set("category", reMapCategory(dnt.Category))
 	d.Set("selected_cis", flattenCIs(dnt.SelectedCIs))
-	d.Set("schedule", dnt.Schedule.Type)
-	d.Set("timezone", dnt.Schedule.TimeZone)
-	d.Set("start_date", dnt.Schedule.StartDate)
-	d.Set("end_date", dnt.Schedule.EndDate)
 
+	/*schedule_item := &map[string]string{
+		"type":       dnt.Schedule.Type,
+		"start_date": dnt.Schedule.StartDate,
+		"end_date":   dnt.Schedule.EndDate,
+		"timezone":   dnt.Schedule.TimeZone,
+	}*/
+
+	//schedule := &schema.Set{}
+	//schedule.Add(schedule_item)
+	item := make(map[string]interface{})
+	item["type"] = dnt.Schedule.Type
+	item["start_date"] = dnt.Schedule.StartDate
+	item["end_date"] = dnt.Schedule.EndDate
+	item["timezone"] = dnt.Schedule.TimeZone
+
+	//var set *schema.Set = new(schema.Set)
+	//set.Add(item)
+
+	if err := d.Set("schedule", []interface{}{item}); err != nil {
+		return diag.FromErr(err)
+	}
 	return diags
 }
 
