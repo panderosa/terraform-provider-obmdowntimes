@@ -26,10 +26,9 @@ resource "downtime" "downtime_01" {
   approver     = "Dariusz Malinowski"
   category     = "OS_CONFIGURATION"
   selected_cis = "4830ca40d21593b7bf85c3d070b8b8c2"
-  
   schedule {
     type       = "ONCE"
-    start_date = "2022-02-25T14:40:00+01:00"
+    start_date = "2022-02-26T14:40:00+01:00"
     end_date   = "2022-02-28T14:40:00+01:00"
     timezone   = "Europe/Berlin"
   }

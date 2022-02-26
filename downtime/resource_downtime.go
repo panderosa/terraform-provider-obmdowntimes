@@ -68,49 +68,6 @@ func resourceDowntime() *schema.Resource {
 					},
 				},
 			},
-			/*"schedule": {
-				Type:     schema.TypeMap,
-				Required: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"type": {
-							Type:     schema.TypeString,
-							Optional: true,
-							Default:  "ONCE",
-						},
-						"start_date": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
-						"end_date": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
-						"timezone": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
-					},
-				},
-			},*/
-			/*"start_date": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"end_date": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"schedule": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "ONCE",
-			},
-			"timezone": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "Europe/Berlin",
-			},*/
 			"last_updated": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -256,23 +213,11 @@ func resourceDowntimeRead(ctx context.Context, d *schema.ResourceData, meta inte
 	d.Set("category", reMapCategory(dnt.Category))
 	d.Set("selected_cis", flattenCIs(dnt.SelectedCIs))
 
-	/*schedule_item := &map[string]string{
-		"type":       dnt.Schedule.Type,
-		"start_date": dnt.Schedule.StartDate,
-		"end_date":   dnt.Schedule.EndDate,
-		"timezone":   dnt.Schedule.TimeZone,
-	}*/
-
-	//schedule := &schema.Set{}
-	//schedule.Add(schedule_item)
 	item := make(map[string]interface{})
 	item["type"] = dnt.Schedule.Type
 	item["start_date"] = dnt.Schedule.StartDate
 	item["end_date"] = dnt.Schedule.EndDate
 	item["timezone"] = dnt.Schedule.TimeZone
-
-	//var set *schema.Set = new(schema.Set)
-	//set.Add(item)
 
 	if err := d.Set("schedule", []interface{}{item}); err != nil {
 		return diag.FromErr(err)
