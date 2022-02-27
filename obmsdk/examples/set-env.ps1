@@ -6,8 +6,9 @@ $obmenv = @{
     OBM_LOG_FILE = "C:\\Users\\sa_malinod\\log.txt"; # if set store HTTP request/response payload to the file
     TF_CLI_CONFIG_FILE = "C:\\Users\\sa_malinod\\AppData\\terraform.tfrc"
 }
-
+write-host "dupa"
 foreach ($key in $obmenv.Keys) {
+    write-host $key
     [System.Environment]::SetEnvironmentVariable($key,$($obmenv.$key),[System.EnvironmentVariableTarget]::Process)    
 }          
 

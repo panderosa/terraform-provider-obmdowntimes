@@ -1,0 +1,32 @@
+
+ucmdb 
+
+
+
+
+
+resource "downtime" "downtime_01" {
+	provider		= "downtimes.dev"
+	name 			= "..."
+	description 	= "..."
+	action {
+		name 		= "..."
+	}
+	approver		= "..."	
+	category 		= "..."	
+	selected_cis {						schema.TypeList
+		ci {							schema.TypeMap => list of key, value pairs
+			id 		= "..."
+		}
+		ci {
+			name 	= "..."
+			type 	= "..."
+		}
+	}
+
+	schedule {
+		start_date 	= "..."
+		end_date 	= "..."
+		timezone 	= "..."
+	}
+}
