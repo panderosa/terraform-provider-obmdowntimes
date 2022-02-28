@@ -1,3 +1,4 @@
 *.json
 *.xml
+set-env.ps1
 terraform.tfstate.*

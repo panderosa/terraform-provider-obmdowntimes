@@ -2,7 +2,6 @@ package downtime
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -10,7 +9,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/panderosa/obmprovider/checking"
 	"github.com/panderosa/obmprovider/obmsdk"
-	"github.com/zclconf/go-cty/cty"
 )
 
 func resourceDowntime() *schema.Resource {
@@ -26,18 +24,20 @@ func resourceDowntime() *schema.Resource {
 				Required: true,
 			},
 			"action": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:         schema.TypeString,
+				Description:  "Value which represents the name of the action of the Downtime",
+				Required:     true,
+				ValidateFunc: validation.StringInSlice(checking.DowntimeActions(), false),
 			},
 			"approver": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
 			"category": {
-				Type:        schema.TypeString,
-				Description: "Value which represents the name of the category of the Downtime",
-				Required:    true,
-				//ValidateDiagFunc:
+				Type:         schema.TypeString,
+				Description:  "Value which represents the name of the category of the Downtime",
+				Required:     true,
+				ValidateFunc: checking.ValidateCategory,
 			},
 			"description": {
 				Type:     schema.TypeString,
@@ -91,42 +91,8 @@ func resourceDowntime() *schema.Resource {
 	}
 }
 
-var (
-	categories = map[string]string{
-		"OTHER":            "1",
-		"OS_CONFIGURATION": "2",
-		"APP_MAINTENANCE":  "3",
-		"APP_INSTALLATION": "4",
-		"NW_MAINTENANCE":   "5",
-		"HW_MAINTENANCE":   "6",
-		"HW_INSTALLATION":  "7",
-		"SECURITY":         "8",
-	}
-)
-
-func validateCategory(v interface{}, p cty.Path) diag.Diagnostics {
-	var diags diag.Diagnostics
-
-	category := v.(string)
-
-	for k := range categories {
-		if category == k {
-			return diags
-		}
-	}
-
-	diag := diag.Diagnostic{
-		Severity: diag.Error,
-		Summary:  "wrong category",
-		Detail:   fmt.Sprintf("%q is not in the list of valid categories", category),
-	}
-	diags = append(diags, diag)
-
-	return diags
-}
-
 func mapCategory(name string) string {
-	for k, v := range categories {
+	for k, v := range checking.Categories() {
 		if k == name {
 			return v
 		}
@@ -135,7 +101,7 @@ func mapCategory(name string) string {
 }
 
 func reMapCategory(cid string) string {
-	for k, v := range categories {
+	for k, v := range checking.Categories() {
 		if v == cid {
 			return k
 		}
