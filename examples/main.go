@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strings"
+	"time"
 
 	"github.com/panderosa/obmprovider/obmsdk"
 )
 
 func main() {
-
-	item := obmsdk.Ci{
+	PrintTime()
+	/*item := obmsdk.Ci{
 		ID: "123",
 	}
 	// works
@@ -30,13 +32,27 @@ func main() {
 	options.Schedule.EndDate = "2022-02-25T14:40:00+01:00"
 	options.Action.Type = "OS Monitoring"
 
-	fmt.Println(flattenCIs(options.SelectedCIs))
+	fmt.Println(flattenCIs(options.SelectedCIs))*/
 
 	/*data, err := xml.MarshalIndent(options, " ", "  ")
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(string(data))*/
+}
+
+func PrintTime() {
+	dt := time.Now()
+	layout := "2006-01-02T15:04:05-07:00"
+	datatime := fmt.Sprint(dt.Format(layout))
+	fmt.Printf("%s\n", datatime)
+	loc := dt.Location()
+	fmt.Printf("loc: %v\n", loc.String())
+	loc1, err := time.LoadLocation("Europe/Warsaw")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("loc: %v\n", loc1)
 }
 
 func flattenCIs(data []obmsdk.Ci) string {

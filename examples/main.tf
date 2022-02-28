@@ -1,5 +1,3 @@
-
-
 terraform {
   required_providers {
     downtimes = {
@@ -18,10 +16,10 @@ provider "downtimes" {
 
 resource "downtime" "downtime_01" {
   provider     = downtimes.dev
-  name         = "OBM Dowtime"
-  description  = "Created from terraform. change 2."
+  name         = "OBM Downtime"
   action       = "STOP_MONITORING"
   approver     = "Dariusz Malinowski"
+  description  = ""
   category     = "APP_MAINTENANCE"
   selected_cis = ["4830ca40d21593b7bf85c3d070b8b8c2","45a87733d08497b5963608756d47eae1","471b3e8f086f6aeb90dae487c512aacc"]
   schedule {

@@ -2,6 +2,7 @@ package checking
 
 import (
 	"fmt"
+	"time"
 )
 
 // List of Downtime Categories
@@ -59,6 +60,20 @@ func ValidateCategory(v interface{}, k string) (warnings []string, errors []erro
 	}
 
 	errors = append(errors, fmt.Errorf("expected %s to be one of %v, got %s", k, keys, category))
+	return warnings, errors
+}
+
+func ValidateTimezone(i interface{}, k string) (warnings []string, errors []error) {
+	v, ok := i.(string)
+	if !ok {
+		errors = append(errors, fmt.Errorf("expected type of %q to be string", k))
+		return warnings, errors
+	}
+
+	_, err := time.LoadLocation(v)
+	if err != nil {
+		errors = append(errors, err)
+	}
 	return warnings, errors
 }
 

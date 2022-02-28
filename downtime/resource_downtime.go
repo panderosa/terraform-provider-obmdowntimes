@@ -20,22 +20,25 @@ func resourceDowntime() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:         schema.TypeString,
+				Description:  "Name of the downtime",
+				ValidateFunc: validation.StringIsNotEmpty,
+				Required:     true,
 			},
 			"action": {
 				Type:         schema.TypeString,
-				Description:  "Value which represents the name of the action of the Downtime",
+				Description:  "A value which represents the downtime action name",
 				Required:     true,
 				ValidateFunc: validation.StringInSlice(checking.DowntimeActions(), false),
 			},
 			"approver": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Description: "Name of the approver of the downtime",
+				Required:    true,
 			},
 			"category": {
 				Type:         schema.TypeString,
-				Description:  "Value which represents the name of the category of the Downtime",
+				Description:  "A value which represents the downtime category name",
 				Required:     true,
 				ValidateFunc: checking.ValidateCategory,
 			},
@@ -47,7 +50,7 @@ func resourceDowntime() *schema.Resource {
 				Type:        schema.TypeSet,
 				Required:    true,
 				MinItems:    1,
-				Description: "List of Configuration Items IDs to be impacted by the Downtime",
+				Description: "List of configuration items impacted by the downtime",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -61,23 +64,26 @@ func resourceDowntime() *schema.Resource {
 						"type": {
 							Type:         schema.TypeString,
 							Required:     true,
+							Description:  "Must be set to ONCE. The donwtime occurs only once on a specified start date and lasts till a specified end date",
 							ValidateFunc: checking.IsOnce,
 						},
 						"start_date": {
 							Type:         schema.TypeString,
-							Description:  "When the Downtime starts. Use the RFC 3339 standard for the date-time format",
+							Description:  "The downtime start date specified as the RFC 3339 date-time format: yyyy-MM-dd'T'HH:mm:ss('+'/'-')HH:mm",
 							ValidateFunc: validation.IsRFC3339Time,
 							Required:     true,
 						},
 						"end_date": {
 							Type:         schema.TypeString,
-							Description:  "When the Downtime ends. Use the RFC 3339 standard for the date-time format",
+							Description:  "The downtime end date specified as the RFC 3339 date-time format: yyyy-MM-dd'T'HH:mm:ss('+'/'-')HH:mm",
 							ValidateFunc: validation.IsRFC3339Time,
 							Required:     true,
 						},
 						"timezone": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:         schema.TypeString,
+							Description:  "Timezone",
+							Required:     true,
+							ValidateFunc: checking.ValidateTimezone,
 						},
 					},
 				},
@@ -115,7 +121,6 @@ func flatten2CIs(data []obmsdk.Ci) []interface{} {
 		array = append(array, data[i].ID)
 	}
 	return []interface{}{array}
-	//return strings.Join(array, ",")
 }
 
 func resourceDowntimeCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -125,7 +130,6 @@ func resourceDowntimeCreate(ctx context.Context, d *schema.ResourceData, meta in
 	cis_list := cis.List()
 	selected_cis := make([]obmsdk.Ci, len(cis_list))
 
-	//obmsdk.LogMe("resourceDowntimeCreate", fmt.Sprintf("Number of elements %v", len(cis_list)))
 	for i := range cis_list {
 		selected_cis[i].ID = cis_list[i].(string)
 	}
@@ -178,7 +182,6 @@ func resourceDowntimeUpdate(ctx context.Context, d *schema.ResourceData, meta in
 		cis_list := cis.List()
 		selected_cis := make([]obmsdk.Ci, len(cis_list))
 
-		//obmsdk.LogMe("resourceDowntimeCreate", fmt.Sprintf("Number of elements %v", len(cis_list)))
 		for i := range cis_list {
 			selected_cis[i].ID = cis_list[i].(string)
 		}
@@ -231,7 +234,6 @@ func resourceDowntimeRead(ctx context.Context, d *schema.ResourceData, meta inte
 	d.Set("description", dnt.Description)
 	d.Set("approver", dnt.Approver)
 	d.Set("category", reMapCategory(dnt.Category))
-	//d.Set("selected_cis", flattenCIs(dnt.SelectedCIs))
 	d.Set("selected_cis", flatten2CIs(dnt.SelectedCIs))
 
 	item := make(map[string]interface{})
