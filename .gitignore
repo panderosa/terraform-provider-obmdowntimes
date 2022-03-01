@@ -3,3 +3,4 @@
 set-env.ps1
 terraform.tfstate
 terraform.tfstate.*
+!terraform-registry-manifest.json
