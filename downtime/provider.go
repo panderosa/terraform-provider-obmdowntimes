@@ -14,23 +14,27 @@ func Provider() *schema.Provider {
 		// setting up shared configuration objects, e.g. addresses, secrets, access keys
 		Schema: map[string]*schema.Schema{
 			"address": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Description: "The URL of the Action web service https://<server>:<port>/topaz/bsmservices/customers/[customerID], where <server> is the name of the OMi server.",
+				Required:    true,
 			},
 			"path": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "/downtimes",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Downtime action name. By default it is /downtimes.",
+				Default:     "/downtimes",
 			},
 			"username": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				Description: "Provider will use this username for BASIC auth to the Downtimes API. By default provider takes the username from the OBM_BA_USER environment variable.",
 				DefaultFunc: schema.EnvDefaultFunc("OBM_BA_USER", nil),
 			},
 			"password": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Sensitive:   true,
+				Description: "Provider will use this password for BASIC auth to the Downtimes API. By default provider takes the password from the OBM_BA_PASSWORD environment variable.",
 				DefaultFunc: schema.EnvDefaultFunc("OBM_BA_PASSWORD", nil),
 			},
 		},

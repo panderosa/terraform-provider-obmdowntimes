@@ -21,13 +21,13 @@ func resourceDowntime() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:         schema.TypeString,
-				Description:  "Name of the downtime",
+				Description:  "Name of the downtime.",
 				ValidateFunc: validation.StringIsNotEmpty,
 				Required:     true,
 			},
 			"action": {
 				Type:         schema.TypeString,
-				Description:  "A value which represents the downtime action name",
+				Description:  "A value which represents the downtime action name. Valid values: REMINDER, SUPPRESS_NOTIFICATIONS, ENFORCE_ON_KPI_CALCULATION, ENFORCE_ON_REPORTS, STOP_MONITORING, ENFORCE_ON_REPORTS.",
 				Required:     true,
 				ValidateFunc: validation.StringInSlice(checking.DowntimeActions(), false),
 			},
@@ -38,19 +38,20 @@ func resourceDowntime() *schema.Resource {
 			},
 			"category": {
 				Type:         schema.TypeString,
-				Description:  "A value which represents the downtime category name",
+				Description:  "A value which represents the downtime category name. Valid values: NW_MAINTENANCE, HW_MAINTENANCE, HW_INSTALLATION, SECURITY, OTHER, OS_CONFIGURATION, APP_MAINTENANCE, APP_INSTALLATION.",
 				Required:     true,
 				ValidateFunc: checking.ValidateCategory,
 			},
 			"description": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Description: "Long description for the downtime.",
+				Optional:    true,
 			},
 			"selected_cis": {
 				Type:        schema.TypeSet,
 				Required:    true,
 				MinItems:    1,
-				Description: "List of configuration items impacted by the downtime",
+				Description: "Array of RTSM configuration items id's impacted by the downtime: [\"id1\",\"id2\",...].",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -64,24 +65,24 @@ func resourceDowntime() *schema.Resource {
 						"type": {
 							Type:         schema.TypeString,
 							Required:     true,
-							Description:  "Must be set to ONCE. The donwtime occurs only once on a specified start date and lasts till a specified end date",
+							Description:  "For the current version of the provider must be set to ONCE. The donwtime occurs only once on a specified start date and lasts till a specified end date.",
 							ValidateFunc: checking.IsOnce,
 						},
 						"start_date": {
 							Type:         schema.TypeString,
-							Description:  "The downtime start date specified as the RFC 3339 date-time format: yyyy-MM-dd'T'HH:mm:ss('+'/'-')HH:mm",
+							Description:  "The downtime start date specified as the RFC 3339 date-time format: yyyy-MM-dd'T'HH:mm:ss('+'/'-')HH:mm.",
 							ValidateFunc: validation.IsRFC3339Time,
 							Required:     true,
 						},
 						"end_date": {
 							Type:         schema.TypeString,
-							Description:  "The downtime end date specified as the RFC 3339 date-time format: yyyy-MM-dd'T'HH:mm:ss('+'/'-')HH:mm",
+							Description:  "The downtime end date specified as the RFC 3339 date-time format: yyyy-MM-dd'T'HH:mm:ss('+'/'-')HH:mm.",
 							ValidateFunc: validation.IsRFC3339Time,
 							Required:     true,
 						},
 						"timezone": {
 							Type:         schema.TypeString,
-							Description:  "Timezone",
+							Description:  "Timezone used in start_date and end_date.",
 							Required:     true,
 							ValidateFunc: checking.ValidateTimezone,
 						},
