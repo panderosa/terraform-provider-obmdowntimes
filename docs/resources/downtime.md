@@ -17,16 +17,16 @@ description: |-
 
 ### Required
 
-- **action** (String) A value which represents the downtime action name
+- **action** (String) A value which represents the downtime action name. Valid values: REMINDER, SUPPRESS_NOTIFICATIONS, ENFORCE_ON_KPI_CALCULATION, ENFORCE_ON_REPORTS, STOP_MONITORING, ENFORCE_ON_REPORTS.
 - **approver** (String) Name of the approver of the downtime
-- **category** (String) A value which represents the downtime category name
-- **description** (String)
-- **name** (String) Name of the downtime
+- **category** (String) A value which represents the downtime category name. Valid values: NW_MAINTENANCE, HW_MAINTENANCE, HW_INSTALLATION, SECURITY, OTHER, OS_CONFIGURATION, APP_MAINTENANCE, APP_INSTALLATION.
+- **name** (String) Name of the downtime.
 - **schedule** (Block Set, Min: 1, Max: 1) (see [below for nested schema](#nestedblock--schedule))
-- **selected_cis** (Set of String) List of configuration items impacted by the downtime
+- **selected_cis** (Set of String) Array of RTSM configuration items id's impacted by the downtime: ["id1","id2",...].
 
 ### Optional
 
+- **description** (String) Long description for the downtime.
 - **id** (String) The ID of this resource.
 - **last_updated** (String)
 
@@ -35,9 +35,9 @@ description: |-
 
 Required:
 
-- **end_date** (String) The downtime end date specified as the RFC 3339 date-time format: yyyy-MM-dd'T'HH:mm:ss('+'/'-')HH:mm
-- **start_date** (String) The downtime start date specified as the RFC 3339 date-time format: yyyy-MM-dd'T'HH:mm:ss('+'/'-')HH:mm
-- **timezone** (String) Timezone
-- **type** (String) Must be set to ONCE. The donwtime occurs only once on a specified start date and lasts till a specified end date
+- **end_date** (String) The downtime end date specified as the RFC 3339 date-time format: yyyy-MM-dd'T'HH:mm:ss('+'/'-')HH:mm.
+- **start_date** (String) The downtime start date specified as the RFC 3339 date-time format: yyyy-MM-dd'T'HH:mm:ss('+'/'-')HH:mm.
+- **timezone** (String) Timezone used in start_date and end_date.
+- **type** (String) For the current version of the provider must be set to ONCE. The donwtime occurs only once on a specified start date and lasts till a specified end date.
 
 
