@@ -136,7 +136,7 @@ func dataSourceDowntimeReadList(ctx context.Context, d *schema.ResourceData, met
 		dsi["description"] = dnt.Description
 		dsi["approver"] = dnt.Approver
 		dsi["category"] = reMapCategory(dnt.Category)
-		dsi["selected_cis"] = flatten3CIs(dnt.SelectedCIs)
+		dsi["selected_cis"] = flatten4CIs(dnt.SelectedCIs)
 		schedule := make(map[string]interface{})
 		schedule["type"] = dnt.Schedule.Type
 		schedule["start_date"] = dnt.Schedule.StartDate
