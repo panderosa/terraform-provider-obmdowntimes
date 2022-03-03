@@ -17,7 +17,7 @@ func dataSourceDowntimeList() *schema.Resource {
 		ReadContext: dataSourceDowntimeReadList,
 
 		Schema: map[string]*schema.Schema{
-			"filter": &schema.Schema{
+			"filter": {
 				Type:     schema.TypeList,
 				Required: true,
 				MinItems: 1,
@@ -34,7 +34,7 @@ func dataSourceDowntimeList() *schema.Resource {
 					},
 				},
 			},
-			"items": &schema.Schema{
+			"items": {
 				Type:     schema.TypeSet,
 				Computed: true,
 				Elem: schema.Resource{
