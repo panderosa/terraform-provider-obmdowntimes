@@ -45,7 +45,10 @@ func Provider() *schema.Provider {
 			"downtime": resourceDowntime(),
 		},
 
-		//DataSourcesMap: map[string]*schema.Resource{}, - TBD ...
+		DataSourcesMap: map[string]*schema.Resource{
+			"downtime_item":      dataSourceDowntime(),
+			"downtime_item_list": dataSourceDowntimeList(),
+		},
 
 		// initialize shared configuration objects - the SDK client which makes API requests to OBM Downtime Service
 		ConfigureContextFunc: providerConfigure,

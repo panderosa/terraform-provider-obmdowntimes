@@ -93,7 +93,6 @@ func (c *Client) newRequest(method string, path string, v interface{}) (*http.Re
 		if v != nil {
 			dat, _ := xml.MarshalIndent(v, "", "  ")
 			//log.Printf("[DEBUG] downtime body: " + string(dat))
-			LogMe("post/put request", string(dat))
 			body = bytes.NewReader(dat)
 		}
 	}
@@ -118,6 +117,15 @@ func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) error
 	// wake up the function ?
 	tempReq, _ := c.newRequest("GET", "", nil)
 	c.http.Do(tempReq)
+
+	payload := ""
+	if req.Body != nil {
+		buf1 := new(bytes.Buffer)
+		buf1.ReadFrom(req.Body)
+		payload = buf1.String()
+	}
+
+	LogMe(req.Method, payload)
 
 	resp, err := c.http.Do(req)
 	if err != nil {

@@ -14,6 +14,7 @@ var ctx = context.Background()
 type Downtimes interface {
 	Create(options DowntimeCreateOptions) (*Downtime, error)
 	Read(downtimeID string) (*Downtime, error)
+	Search(querystring string) (*DowntimeList, error)
 	Delete(downtimeID string) error
 	Update(downtimeID string, options Downtime) error
 }
@@ -61,6 +62,12 @@ type Downtime struct {
 	Schedule     Schedule    `xml:"schedule"`
 }
 
+// Structure to store XML Dowtime
+type DowntimeList struct {
+	XMLName   xml.Name   `xml:"downtimes"`
+	Downtimes []Downtime `xml:"downtimes"`
+}
+
 type DowntimeCreateOptions struct {
 	XMLName      xml.Name  `xml:"downtime"`
 	UserId       string    `xml:"userId,attr"`
@@ -104,13 +111,26 @@ func (s *downtimes) Read(downtimeID string) (*Downtime, error) {
 	if !validStringID(&downtimeID) {
 		return nil, errors.New("invalid value for downtimeID")
 	}
-	fmt.Printf("Reading OBM Downtime %v\n", downtimeID)
 	u := fmt.Sprintf("/%s", url.QueryEscape(downtimeID))
 	req, err := s.client.newRequest("GET", u, nil)
 	if err != nil {
 		return nil, err
 	}
 	ent := &Downtime{}
+	err = s.client.do(ctx, req, ent)
+	if err != nil {
+		return nil, err
+	}
+	return ent, nil
+}
+
+func (s *downtimes) Search(querystring string) (*DowntimeList, error) {
+	u := fmt.Sprintf("?%s", querystring)
+	req, err := s.client.newRequest("GET", u, nil)
+	if err != nil {
+		return nil, err
+	}
+	ent := &DowntimeList{}
 	err = s.client.do(ctx, req, ent)
 	if err != nil {
 		return nil, err
