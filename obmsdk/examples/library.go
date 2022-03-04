@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"log"
@@ -44,6 +45,18 @@ func read(client *sdk.Client, downtimeID string) {
 	fmt.Println(string(barray))
 }
 
+func filter(client *sdk.Client, v interface{}) {
+	dnts, err := client.Downtimes.Search(v)
+	if err != nil {
+		log.Fatal(err)
+	}
+	barray, err := xml.MarshalIndent(dnts, " ", "   ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(barray))
+}
+
 func delete(client *sdk.Client, downtimeID string) {
 	err := client.Downtimes.Delete(downtimeID)
 	if err != nil {
@@ -80,4 +93,26 @@ func loadUpdateXML(filename string) (*sdk.Downtime, error) {
 		return nil, fmt.Errorf("loadCreateXML: %v", err)
 	}
 	return v, nil
+}
+
+func loadFilters(filename string) interface{} {
+	data, err := os.ReadFile(filename)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//v := make(map[string]interface{})
+	v := new(interface{})
+	err = json.Unmarshal(data, v)
+	vlist := (*v).([]interface{})
+	queryMap := make(map[string]string)
+	for _, e := range vlist {
+		item := e.(map[string]interface{})
+		queryMap[item["name"].(string)] = item["value"].(string)
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+	return queryMap
 }

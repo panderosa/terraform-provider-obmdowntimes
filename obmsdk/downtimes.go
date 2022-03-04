@@ -14,7 +14,7 @@ var ctx = context.Background()
 type Downtimes interface {
 	Create(options DowntimeCreateOptions) (*Downtime, error)
 	Read(downtimeID string) (*Downtime, error)
-	Search(querystring string) (*DowntimeList, error)
+	Search(queryMap interface{}) (*DowntimeList, error)
 	Delete(downtimeID string) error
 	Update(downtimeID string, options Downtime) error
 }
@@ -65,7 +65,7 @@ type Downtime struct {
 // Structure to store XML Dowtime
 type DowntimeList struct {
 	XMLName   xml.Name   `xml:"downtimes"`
-	Downtimes []Downtime `xml:"downtimes"`
+	Downtimes []Downtime `xml:"downtime"`
 }
 
 type DowntimeCreateOptions struct {
@@ -84,7 +84,8 @@ type DowntimeCreateOptions struct {
 
 func (s *downtimes) Create(options DowntimeCreateOptions) (*Downtime, error) {
 	fmt.Println("Creating OBM Downtime")
-	req, err := s.client.newRequest("POST", "", options)
+	path := ""
+	req, err := s.client.newRequest("POST", path, options)
 	if err != nil {
 		return nil, err
 	}
@@ -99,8 +100,8 @@ func (s *downtimes) Create(options DowntimeCreateOptions) (*Downtime, error) {
 
 func (s *downtimes) Update(downtimeID string, options Downtime) error {
 	fmt.Println("Updating OBM Downtime")
-	u := fmt.Sprintf("/%s", url.QueryEscape(downtimeID))
-	req, err := s.client.newRequest("PUT", u, options)
+	path := fmt.Sprintf("/%s", url.QueryEscape(downtimeID))
+	req, err := s.client.newRequest("PUT", path, options)
 	if err != nil {
 		return fmt.Errorf("create request failed: %v", err)
 	}
@@ -111,8 +112,8 @@ func (s *downtimes) Read(downtimeID string) (*Downtime, error) {
 	if !validStringID(&downtimeID) {
 		return nil, errors.New("invalid value for downtimeID")
 	}
-	u := fmt.Sprintf("/%s", url.QueryEscape(downtimeID))
-	req, err := s.client.newRequest("GET", u, nil)
+	path := fmt.Sprintf("/%s", url.QueryEscape(downtimeID))
+	req, err := s.client.newRequest("GET", path, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -124,9 +125,9 @@ func (s *downtimes) Read(downtimeID string) (*Downtime, error) {
 	return ent, nil
 }
 
-func (s *downtimes) Search(querystring string) (*DowntimeList, error) {
-	u := fmt.Sprintf("?%s", querystring)
-	req, err := s.client.newRequest("GET", u, nil)
+func (s *downtimes) Search(queryMap interface{}) (*DowntimeList, error) {
+	path := ""
+	req, err := s.client.newRequest("GET", path, queryMap)
 	if err != nil {
 		return nil, err
 	}
@@ -142,8 +143,8 @@ func (s *downtimes) Delete(downtimeID string) error {
 	if !validStringID(&downtimeID) {
 		return errors.New("invalid value for downtimeID")
 	}
-	u := fmt.Sprintf("/%s", url.QueryEscape(downtimeID))
-	req, err := s.client.newRequest("DELETE", u, nil)
+	path := fmt.Sprintf("/%s", url.QueryEscape(downtimeID))
+	req, err := s.client.newRequest("DELETE", path, nil)
 	if err != nil {
 		return err
 	}

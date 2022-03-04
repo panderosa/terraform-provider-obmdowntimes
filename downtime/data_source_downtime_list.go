@@ -2,8 +2,6 @@ package downtime
 
 import (
 	"context"
-	"fmt"
-	"net/url"
 
 	//"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -18,9 +16,8 @@ func dataSourceDowntimeList() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"filter": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Required: true,
-				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
@@ -34,10 +31,10 @@ func dataSourceDowntimeList() *schema.Resource {
 					},
 				},
 			},
-			"items": {
+			"item": {
 				Type:     schema.TypeSet,
 				Computed: true,
-				Elem: schema.Resource{
+				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": {
 							Type:     schema.TypeString,
@@ -109,27 +106,26 @@ func dataSourceDowntimeReadList(ctx context.Context, d *schema.ResourceData, met
 	filter := d.Get("filter").(*schema.Set)
 	filter_list := filter.List()
 
-	queryString := ""
+	queryMap := make(map[string]string)
 	for i := range filter_list {
-		item := filter_list[i].(map[string]string)
-		name := item["name"]
-		value := item["value"]
-		if queryString == "" {
-			queryString = fmt.Sprintf("filter=%v==%v", name, url.QueryEscape(value))
-		} else {
-			queryString = fmt.Sprintf("%v&filter=%v==%v", queryString, name, url.QueryEscape(value))
-		}
+		item := filter_list[i].(map[string]interface{})
+		name := item["name"].(string)
+		value := item["value"].(string)
+		queryMap[name] = value
 	}
 
-	dnts, err := conn.Downtimes.Search(queryString)
+	dnts, err := conn.Downtimes.Search(queryMap)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	downtimeList := dnts.Downtimes
-	dsis := make([]interface{}, len(downtimeList))
 
-	for i, dnt := range downtimeList {
+	downtimeList := dnts.Downtimes
+	dsis := make([]interface{}, 0, len(downtimeList))
+	//dsis := new(schema.Set)
+
+	for _, dnt := range downtimeList {
 		dsi := make(map[string]interface{})
+
 		dsi["id"] = dnt.ID
 		dsi["name"] = dnt.Name
 		dsi["action"] = dnt.Action.Type
@@ -137,19 +133,41 @@ func dataSourceDowntimeReadList(ctx context.Context, d *schema.ResourceData, met
 		dsi["approver"] = dnt.Approver
 		dsi["category"] = reMapCategory(dnt.Category)
 		dsi["selected_cis"] = flatten4CIs(dnt.SelectedCIs)
-		schedule := make(map[string]interface{})
+		/*schedule := make(map[string]interface{})
 		schedule["type"] = dnt.Schedule.Type
 		schedule["start_date"] = dnt.Schedule.StartDate
 		schedule["end_date"] = dnt.Schedule.EndDate
 		schedule["timezone"] = dnt.Schedule.TimeZone
-		dsi["schedule"] = schedule
-		dsis[i] = dsi
-		d.SetId(dnt.ID)
+		dsi["schedule"] = schedule*/
+		dsis = append(dsis, dsi)
 	}
-	if err := d.Set("items", dsis); err != nil {
+	/*buf, err := json.Marshal(dsis[0])
+	if err != nil {
 		return diag.FromErr(err)
 	}
+	LogMe("dsis[0] >>>>", string(buf))
 
+	tt := reflect.ValueOf(dsis[0]).Kind().String()
+	LogMe("dsis[0] type is ...", tt)*/
+
+	/*dsi := make(map[string]interface{})
+	dsi["name"] = downtimeList[0].Name
+	dsi["id"] = downtimeList[0].ID
+
+	dsi1 := make(map[string]interface{})
+	dsi1["name"] = downtimeList[1].Name
+	dsi1["id"] = downtimeList[2].ID
+	ios := []interface{}{dsi, dsi1}
+	LogMe("ios type is ...", fmt.Sprintf("%T and value %v", ios, ios))
+	dsis := make([]interface{}, 0, 2)
+	dsis = append(dsis, dsi)
+	dsis = append(dsis, dsi1)
+	LogMe("dsis type is ...", fmt.Sprintf("%T and value %v", dsis, dsis))*/
+	//if err := d.Set("item", ios); err != nil { // - this works
+	if err := d.Set("item", dsis); err != nil {
+		return diag.FromErr(err)
+	}
+	d.SetId("123456789")
 	return diags
 }
 

@@ -12,7 +12,6 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/google/go-querystring/query"
 	cleanhttp "github.com/hashicorp/go-cleanhttp"
 )
 
@@ -83,16 +82,21 @@ func (c *Client) newRequest(method string, path string, v interface{}) (*http.Re
 	switch method {
 	case "GET":
 		if v != nil {
-			q, err := query.Values(v)
-			if err != nil {
-				return nil, err
+			elements := v.(map[string]string)
+			queryString := ""
+			for name, value := range elements {
+				if queryString == "" {
+					queryString = fmt.Sprintf("filter=%v==%v", name, url.QueryEscape(value))
+				} else {
+					queryString = fmt.Sprintf("%v&filter=%v==%v", queryString, name, url.QueryEscape(value))
+				}
 			}
-			u.RawQuery = q.Encode()
+			u.RawQuery = queryString
 		}
+
 	case "POST", "PUT":
 		if v != nil {
 			dat, _ := xml.MarshalIndent(v, "", "  ")
-			//log.Printf("[DEBUG] downtime body: " + string(dat))
 			body = bytes.NewReader(dat)
 		}
 	}
@@ -124,8 +128,8 @@ func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) error
 		buf1.ReadFrom(req.Body)
 		payload = buf1.String()
 	}
-
-	LogMe(req.Method, payload)
+	info := fmt.Sprintf("Method: %v, URI: %v", req.Method, req.URL.RawQuery)
+	LogMe(info, payload)
 
 	resp, err := c.http.Do(req)
 	if err != nil {

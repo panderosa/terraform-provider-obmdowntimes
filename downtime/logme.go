@@ -1,4 +1,4 @@
-package obmsdk
+package downtime
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 )
 
 func LogMe(statement string, message string) {
-	filename, cond1 := os.LookupEnv("OBM_SDK_LOG_FILE")
+	filename, cond1 := os.LookupEnv("OBM_PROVIDER_LOG_FILE")
 	if cond1 {
 		currentTime := time.Now()
 		file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 
 	sdk "github.com/panderosa/obmprovider/obmsdk"
@@ -10,9 +9,10 @@ import (
 
 func main() {
 
-	requestPtr := flag.String("request", "list", "action on OBM Downtime Service: create, read, delete, list, update")
+	requestPtr := flag.String("request", "", "action on OBM Downtime Service: create, read, delete, update, filter")
 	downtimePtr := flag.String("id", "", "OBM downtime ID")
-	filenamePtr := flag.String("filename", "", "XML file with options to create and update OBM Downtime")
+	filenamePtr := flag.String("filename", "", "XML file with options to create and update OBM Downtime, or JSON file with filters to search")
+
 	flag.Parse()
 
 	address := sdk.GetEnv("OBM_BASE_URL")
@@ -48,8 +48,9 @@ func main() {
 			panic("Downtime ID is empty")
 		}
 		delete(client, downtimeID)
-	case "list":
-		fmt.Println(request)
+	case "filter":
+		v := loadFilters(filename)
+		filter(client, v)
 	case "read":
 		if downtimeID == "" {
 			panic("Downtime ID is empty")
