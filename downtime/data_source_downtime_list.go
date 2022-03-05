@@ -121,7 +121,6 @@ func dataSourceDowntimeReadList(ctx context.Context, d *schema.ResourceData, met
 
 	downtimeList := dnts.Downtimes
 	dsis := make([]interface{}, 0, len(downtimeList))
-	//dsis := new(schema.Set)
 
 	for _, dnt := range downtimeList {
 		dsi := make(map[string]interface{})
@@ -133,37 +132,15 @@ func dataSourceDowntimeReadList(ctx context.Context, d *schema.ResourceData, met
 		dsi["approver"] = dnt.Approver
 		dsi["category"] = reMapCategory(dnt.Category)
 		dsi["selected_cis"] = flatten4CIs(dnt.SelectedCIs)
-		/*schedule := make(map[string]interface{})
+		schedule := make(map[string]interface{})
 		schedule["type"] = dnt.Schedule.Type
 		schedule["start_date"] = dnt.Schedule.StartDate
 		schedule["end_date"] = dnt.Schedule.EndDate
 		schedule["timezone"] = dnt.Schedule.TimeZone
-		dsi["schedule"] = schedule*/
+		dsi["schedule"] = []interface{}{schedule}
 		dsis = append(dsis, dsi)
 	}
-	/*buf, err := json.Marshal(dsis[0])
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	LogMe("dsis[0] >>>>", string(buf))
 
-	tt := reflect.ValueOf(dsis[0]).Kind().String()
-	LogMe("dsis[0] type is ...", tt)*/
-
-	/*dsi := make(map[string]interface{})
-	dsi["name"] = downtimeList[0].Name
-	dsi["id"] = downtimeList[0].ID
-
-	dsi1 := make(map[string]interface{})
-	dsi1["name"] = downtimeList[1].Name
-	dsi1["id"] = downtimeList[2].ID
-	ios := []interface{}{dsi, dsi1}
-	LogMe("ios type is ...", fmt.Sprintf("%T and value %v", ios, ios))
-	dsis := make([]interface{}, 0, 2)
-	dsis = append(dsis, dsi)
-	dsis = append(dsis, dsi1)
-	LogMe("dsis type is ...", fmt.Sprintf("%T and value %v", dsis, dsis))*/
-	//if err := d.Set("item", ios); err != nil { // - this works
 	if err := d.Set("item", dsis); err != nil {
 		return diag.FromErr(err)
 	}
