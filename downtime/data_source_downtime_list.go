@@ -4,6 +4,7 @@ import (
 	"context"
 
 	//"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -15,6 +16,10 @@ func dataSourceDowntimeList() *schema.Resource {
 		ReadContext: dataSourceDowntimeReadList,
 
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"filter": {
 				Type:     schema.TypeSet,
 				Required: true,
@@ -118,13 +123,14 @@ func dataSourceDowntimeReadList(ctx context.Context, d *schema.ResourceData, met
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
+	// will be used to create id for data source
+	var ids []string
 	downtimeList := dnts.Downtimes
 	dsis := make([]interface{}, 0, len(downtimeList))
 
 	for _, dnt := range downtimeList {
 		dsi := make(map[string]interface{})
-
+		ids = append(ids, dnt.ID)
 		dsi["id"] = dnt.ID
 		dsi["name"] = dnt.Name
 		dsi["action"] = dnt.Action.Type
@@ -144,7 +150,9 @@ func dataSourceDowntimeReadList(ctx context.Context, d *schema.ResourceData, met
 	if err := d.Set("item", dsis); err != nil {
 		return diag.FromErr(err)
 	}
-	d.SetId("123456789")
+	id := GenerateIdByHash(ids)
+	d.SetId(id)
+
 	return diags
 }
 
