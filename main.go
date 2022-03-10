@@ -24,7 +24,7 @@ func main() {
 	}
 
 	if debugMode {
-		err := plugin.Debug(context.Background(), "hashicorp/downtimes", opts)
+		err := plugin.Debug(context.Background(), "panderosa/obmdowntimes", opts)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
