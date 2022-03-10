@@ -16,7 +16,7 @@ terraform {
   required_providers {
     downtimes = {
       source = "hashicorp/downtimes"
-      version = "1.0.3"
+      version = "1.0.5"
     }
   }
 }
@@ -47,6 +47,8 @@ resource "downtime" "<resource_name>" {
   }
 }
 ````
+
+
 
 ## Authentication
 

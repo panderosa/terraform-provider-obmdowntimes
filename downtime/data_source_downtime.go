@@ -90,7 +90,7 @@ func dataSourceDowntimeRead(ctx context.Context, d *schema.ResourceData, meta in
 	d.Set("description", dnt.Description)
 	d.Set("approver", dnt.Approver)
 	d.Set("category", reMapCategory(dnt.Category))
-	if err := d.Set("selected_cis", flatten3CIs(dnt.SelectedCIs)); err != nil {
+	if err := d.Set("selected_cis", Flatten3CIs(dnt.SelectedCIs)); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -106,12 +106,4 @@ func dataSourceDowntimeRead(ctx context.Context, d *schema.ResourceData, meta in
 
 	d.SetId(downtimeID)
 	return diags
-}
-
-func flatten3CIs(data []obmsdk.Ci) []interface{} {
-	array := make([]interface{}, 0, len(data))
-	for i := range data {
-		array = append(array, data[i].ID)
-	}
-	return array
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/hashicorp/go-uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/panderosa/obmprovider/obmsdk"
 )
 
 func GenerateIdByUuid() (*string, error) {
@@ -27,4 +28,27 @@ func GenerateIdByHash(ids []string) string {
 	}
 	id = fmt.Sprintf("%d", schema.HashString(id))
 	return id
+}
+
+func Flatten2CIs(data []obmsdk.Ci) []interface{} {
+	array := make([]string, 0, len(data))
+	for i := range data {
+		array = append(array, data[i].ID)
+	}
+	return []interface{}{array}
+}
+func Flatten3CIs(data []obmsdk.Ci) []interface{} {
+	array := make([]interface{}, 0, len(data))
+	for i := range data {
+		array = append(array, data[i].ID)
+	}
+	return array
+}
+
+func Flatten4CIs(data []obmsdk.Ci) []interface{} {
+	array := make([]interface{}, 0, len(data))
+	for i := range data {
+		array = append(array, data[i].ID)
+	}
+	return array
 }

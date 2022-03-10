@@ -156,9 +156,16 @@ func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) error
 	// log body content
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(resp.Body)
-	//log.Printf("[DEBUG] Body: %s", buf.String())
-	LogMe("response", buf.String())
-	return xml.Unmarshal(buf.Bytes(), v)
+	err = xml.Unmarshal(buf.Bytes(), v)
+	if err != nil {
+		return err
+	}
+	bb, err := xml.MarshalIndent(v, " ", "  ")
+	if err != nil {
+		return err
+	}
+	LogMe("response", string(bb))
+	return nil
 }
 
 func checkResponseCode(r *http.Response) error {

@@ -95,6 +95,9 @@ func resourceDowntime() *schema.Resource {
 				Computed: true,
 			},
 		},
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 	}
 }
 
@@ -114,14 +117,6 @@ func reMapCategory(cid string) string {
 		}
 	}
 	return cid
-}
-
-func flatten2CIs(data []obmsdk.Ci) []interface{} {
-	array := make([]string, 0, len(data))
-	for i := range data {
-		array = append(array, data[i].ID)
-	}
-	return []interface{}{array}
 }
 
 func resourceDowntimeCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -235,7 +230,7 @@ func resourceDowntimeRead(ctx context.Context, d *schema.ResourceData, meta inte
 	d.Set("description", dnt.Description)
 	d.Set("approver", dnt.Approver)
 	d.Set("category", reMapCategory(dnt.Category))
-	d.Set("selected_cis", flatten2CIs(dnt.SelectedCIs))
+	d.Set("selected_cis", Flatten3CIs(dnt.SelectedCIs))
 
 	item := make(map[string]interface{})
 	item["type"] = dnt.Schedule.Type
