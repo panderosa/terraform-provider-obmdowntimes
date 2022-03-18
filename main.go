@@ -7,7 +7,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-
 	"github.com/panderosa/obmprovider/downtime"
 )
 
@@ -24,7 +23,7 @@ func main() {
 	}
 
 	if debugMode {
-		err := plugin.Debug(context.Background(), "panderosa/obmdowntimes", opts)
+		err := plugin.Debug(context.Background(), "hashicorp/downtimes", opts)
 		if err != nil {
 			log.Fatal(err.Error())
 		}

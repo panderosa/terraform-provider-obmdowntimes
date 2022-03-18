@@ -2,7 +2,6 @@
 *.xml
 set-env.ps1
 set-env.sh
-#terraform.tfstate
-#terraform.tfstate.*
 !terraform-registry-manifest.json
 **/examples
+terraform.tfrc

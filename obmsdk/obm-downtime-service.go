@@ -43,11 +43,14 @@ func NewClient(address *string, path *string, username *string, password *string
 		basicAuth = base64.StdEncoding.EncodeToString([]byte(data))
 	}
 
-	if (address == nil) || (path == nil) {
+	if address == nil {
 		return nil, fmt.Errorf("empty address and/or path")
 	}
 
-	plainText := fmt.Sprintf("%v%v", *address, *path)
+	plainText := fmt.Sprintf("%s", *address)
+	if path != nil {
+		plainText = fmt.Sprintf("%s%s", plainText, *path)
+	}
 	baseURL, err := url.Parse(plainText)
 	if err != nil {
 		return nil, fmt.Errorf("NewClient: failed to url-parse %v", plainText)
