@@ -12,7 +12,8 @@ import (
 	"net/url"
 	"os"
 
-	cleanhttp "github.com/hashicorp/go-cleanhttp"
+	"github.com/hashicorp/go-cleanhttp"
+	"github.com/panderosa/obmprovider/utils"
 )
 
 type Client struct {
@@ -43,11 +44,14 @@ func NewClient(address *string, path *string, username *string, password *string
 		basicAuth = base64.StdEncoding.EncodeToString([]byte(data))
 	}
 
-	if (address == nil) || (path == nil) {
-		return nil, fmt.Errorf("empty address and/or path")
+	if address == nil {
+		return nil, fmt.Errorf("empty OBM Downtime Service address")
 	}
 
-	plainText := fmt.Sprintf("%v%v", *address, *path)
+	plainText := fmt.Sprintf("%s", *address)
+	if path != nil {
+		plainText = fmt.Sprintf("%s%s", plainText, *path)
+	}
 	baseURL, err := url.Parse(plainText)
 	if err != nil {
 		return nil, fmt.Errorf("NewClient: failed to url-parse %v", plainText)
@@ -128,8 +132,8 @@ func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) error
 		buf1.ReadFrom(req.Body)
 		payload = buf1.String()
 	}
-	info := fmt.Sprintf("Method: %v, URI: %v", req.Method, req.URL.RawQuery)
-	LogMe(info, payload)
+
+	utils.LogMe("DEBUG", fmt.Sprintf("sdk|do()|method %v, URI %v", req.Method, req.URL.String()), payload)
 
 	resp, err := c.http.Do(req)
 	if err != nil {
@@ -156,16 +160,8 @@ func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) error
 	// log body content
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(resp.Body)
-	err = xml.Unmarshal(buf.Bytes(), v)
-	if err != nil {
-		return err
-	}
-	bb, err := xml.MarshalIndent(v, " ", "  ")
-	if err != nil {
-		return err
-	}
-	LogMe("response", string(bb))
-	return nil
+	utils.LogMe("DEBUG", "sdk|respone body", buf.String())
+	return xml.Unmarshal(buf.Bytes(), v)
 }
 
 func checkResponseCode(r *http.Response) error {

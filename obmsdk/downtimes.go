@@ -83,7 +83,6 @@ type DowntimeCreateOptions struct {
 }
 
 func (s *downtimes) Create(options DowntimeCreateOptions) (*Downtime, error) {
-	fmt.Println("Creating OBM Downtime")
 	path := ""
 	req, err := s.client.newRequest("POST", path, options)
 	if err != nil {
@@ -99,11 +98,10 @@ func (s *downtimes) Create(options DowntimeCreateOptions) (*Downtime, error) {
 }
 
 func (s *downtimes) Update(downtimeID string, options Downtime) error {
-	fmt.Println("Updating OBM Downtime")
 	path := fmt.Sprintf("/%s", url.QueryEscape(downtimeID))
 	req, err := s.client.newRequest("PUT", path, options)
 	if err != nil {
-		return fmt.Errorf("create request failed: %v", err)
+		return fmt.Errorf("update failed: %v", err)
 	}
 	return s.client.do(ctx, req, nil)
 }

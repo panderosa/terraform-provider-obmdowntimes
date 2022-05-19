@@ -8,21 +8,16 @@ import (
 	"github.com/panderosa/obmprovider/obmsdk"
 )
 
-// this function resturns a terraform .ResourceProvider interface
+// this function returns a terraform .ResourceProvider interface
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		// setting up shared configuration objects, e.g. addresses, secrets, access keys
 		Schema: map[string]*schema.Schema{
 			"address": {
 				Type:        schema.TypeString,
-				Description: "The URL of the Action web service https://<server>:<port>/topaz/bsmservices/customers/[customerID], where <server> is the name of the OMi server.",
-				Required:    true,
-			},
-			"path": {
-				Type:        schema.TypeString,
+				Description: "The URL of the Action web service https://<server>:<port>/topaz/bsmservices/customers/[customerID]/downtimes, where <server> is the name of the OMi server.",
 				Optional:    true,
-				Description: "Downtime action name. By default it is /downtimes.",
-				Default:     "/downtimes",
+				DefaultFunc: schema.EnvDefaultFunc("OBM_BA_ADDRESS", nil),
 			},
 			"username": {
 				Type:        schema.TypeString,
@@ -57,20 +52,11 @@ func Provider() *schema.Provider {
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	address := d.Get("address").(string)
-	path := d.Get("path").(string)
 	username := d.Get("username").(string)
 	password := d.Get("password").(string)
 
 	var diags diag.Diagnostics
-	if (username != "") && (password != "") {
-		conn, err := obmsdk.NewClient(&address, &path, &username, &password)
-		if err != nil {
-			return nil, diag.FromErr(err)
-		}
-		return conn, diags
-	}
-
-	conn, err := obmsdk.NewClient(&address, &path, nil, nil)
+	conn, err := obmsdk.NewClient(&address, nil, &username, &password)
 	if err != nil {
 		return nil, diag.FromErr(err)
 	}

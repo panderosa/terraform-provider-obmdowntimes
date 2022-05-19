@@ -7,9 +7,10 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-
 	"github.com/panderosa/obmprovider/downtime"
 )
+
+// 2022-05-11 16:34:00
 
 func main() {
 	var debugMode bool

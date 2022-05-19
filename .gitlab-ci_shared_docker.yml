@@ -1,0 +1,18 @@
+stages:
+  - release
+
+release:
+  stage: release
+  image: 
+    name: goreleaser/goreleaser
+    entrypoint: ['']
+  only:
+    - tags
+  variables:
+    # Disable shallow cloning so that goreleaser can diff between tags to
+    # generate a changelog.
+    GIT_DEPTH: 0
+    GITLAB_TOKEN: "$GITLAB_ACCESS_TOKEN"
+  script:
+    - goreleaser release --rm-dist --debug
+

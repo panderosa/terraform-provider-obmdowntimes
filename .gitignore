@@ -1,7 +1,11 @@
-*.json
-*.xml
-set-env.ps1
-#terraform.tfstate
-#terraform.tfstate.*
+.vscode
+**/*.txt
+**/*.xml
+**/*.json
+**/*.ps1
+**/*.sh
+**/*.log
+examples/.terraform*
+examples/terraform.tfstate*
+dist
 !terraform-registry-manifest.json
-**/examples

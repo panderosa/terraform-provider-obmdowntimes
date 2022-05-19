@@ -1,0 +1,25 @@
+stages:
+  - test
+  - release
+
+release:
+  stage: release
+  tags:
+    - monitoring
+  only:
+    - tags
+  variables:
+    # Disable shallow cloning so that goreleaser can diff between tags to
+    # generate a changelog.
+    GIT_DEPTH: 0
+    GITLAB_TOKEN: "$GITLAB_ACCESS_TOKEN"
+  script:
+    - export PATH=$PATH:/usr/local/go/bin
+    - go version
+    - go env
+    - go fmt 
+    - mkdir -p mybinaries
+    - go build -o mybinaries ./...
+  artifacts:
+    paths:
+      - mybinaries

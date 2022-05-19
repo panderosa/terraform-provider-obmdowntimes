@@ -23,7 +23,7 @@ terraform {
 
 # Configure Provider options
 provider "downtimes" {
-  address = "https://<server>::<port>/topaz/bsmservices/customers/[customerID]"
+  address = "https://<server>::<port>/topaz/bsmservices/customers/[customerID]/downtimes"
   path    = "/downtimes"
   username = "<username>"
   password = "<password>"
@@ -38,7 +38,7 @@ resource "downtime" "<resource_name>" {
   approver     = "<user name>"
   description  = "<long_description>"
   category     = "APP_MAINTENANCE"
-  selected_cis = ["<ucmdb_id1>","<ucmdb_id2>","<ucmdb_id3>"]
+  selected_cis = ["<ucmdbId>",..."]
   schedule {
     type       = "ONCE"
     start_date = "<start_date>"
@@ -48,22 +48,9 @@ resource "downtime" "<resource_name>" {
 }
 ````
 
-
-
-## Authentication
-
-Provider uses Basic Authentication to authenticate in the Operations Bridge Manager Downtimes service.
-Configure `username` and `password` in the Provider block or set the values in the environment variables `OBM_BA_USER` and `OBM_BA_PASSWORD`.
-
 ## Argument Reference
 
-### Required Arguments
-
-- `address` (String) The URL of the Operations Bridge Manager Downtimes service
-
-### Optional Arguments
-
-- `username` (String) Provider will use this username for Basic authentication to the Downtimes Service. By default provider takes the username from the `OBM_BA_USER` environment variable.
-- password' (String, Sensitive) Provider will use this password for Basic auth to the Downtimes Service. By default provider takes the password from the `OBM_BA_PASSWORD` environment variable.
-- `path` (String, Optional) Possible value is `/downtimes`.
+- `address` (String) The URL address of the Operations Bridge Manager Downtimes service. Add as explicit configuration in the provider block or set as in the `OBM_BA_ADDRESS` Environmental Variable
+- `username` (String) Provider will use this username for Basic authentication. Add as explicit configuration in the provider block or set as in the `OBM_BA_USER` Environment Variable.
+- `password` (String, Sensitive) Provider will use this password for Basic authentication. Add as explicit configuration in the provider block or set as in the `OBM_BA_PASSWORD` Environment Variable.
 
